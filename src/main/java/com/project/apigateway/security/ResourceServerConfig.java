@@ -21,6 +21,7 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception{
         http.csrf().disable().authorizeRequests()
+                .antMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated()
             .and().addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }

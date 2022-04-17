@@ -23,7 +23,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
-    @Value("security.oauth2.resource.jwt.key-value")
+    @Value("${security.oauth2.resource.jwt.key-value}")
     private String secretKey;
 
     @Autowired
