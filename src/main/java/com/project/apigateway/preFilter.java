@@ -50,7 +50,8 @@ public class preFilter extends ZuulFilter {
         }
         if(context.getRequest().getHeader("Authorization")==null||
                 Jwts.parser().setSigningKey(secretKey).parseClaimsJws(context.getRequest().getHeader("Authorization")).getBody().getSubject()==null){
-            context.unset();
+//            context.unset();
+            context.setSendZuulResponse(false);
             context.setResponseStatusCode(HttpStatus.SC_UNAUTHORIZED);
         }
         else{
