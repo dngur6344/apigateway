@@ -5,6 +5,8 @@ import com.netflix.zuul.context.RequestContext;
 import com.project.apigateway.security.JwtTokenProvider;
 import io.jsonwebtoken.Jwts;
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,20 +44,34 @@ public class preFilter extends ZuulFilter {
     }
     @Override
     public Object run(){
+        Logger logger = LoggerFactory.getLogger(preFilter.class);
         RequestContext context = RequestContext.getCurrentContext();
 
         if(context.getRequest().getRequestURI().split("/")[1].equals("auth")){
             //로그인하는 경우엔 Authorization header가 없어도 된다.
             return null;
         }
-        if(context.getRequest().getHeader("Authorization")==null||
-                Jwts.parser().setSigningKey(secretKey).parseClaimsJws(context.getRequest().getHeader("Authorization")).getBody().getSubject()==null){
-//            context.unset();
+        if(context.getRequest().getHeader("Authorization")==null){
+            logger.error("Pre-filter not passed");
             context.setSendZuulResponse(false);
             context.setResponseStatusCode(HttpStatus.SC_UNAUTHORIZED);
         }
         else{
-            System.out.println("Pre-filter pass");
+            try{
+                if(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(context.getRequest().getHeader("Authorization")).getBody().getSubject()==null){
+                    context.setSendZuulResponse(false);
+                    context.setResponseStatusCode(HttpStatus.SC_UNAUTHORIZED);
+                }
+                else{
+                    logger.info("Pre-filter pass");
+                }
+            }
+            catch (RuntimeException ex){
+                logger.error("Pre-filter not passed");
+                ex.printStackTrace();
+                context.setSendZuulResponse(false);
+                context.setResponseStatusCode(HttpStatus.SC_UNAUTHORIZED);
+            }
         }
         return null;
     }
