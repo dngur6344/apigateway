@@ -2,7 +2,7 @@ package com.project.apigateway;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
-import com.project.apigateway.security.JwtTokenProvider;
+//import com.project.apigateway.security.JwtTokenProvider;
 import io.jsonwebtoken.Jwts;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
@@ -21,8 +21,8 @@ public class preFilter extends ZuulFilter {
     @Value("${security.oauth2.resource.jwt.key-value}")
     private String secretKey;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+//    @Autowired
+//    private JwtTokenProvider jwtTokenProvider;
 
     @PostConstruct
     protected void init() {
